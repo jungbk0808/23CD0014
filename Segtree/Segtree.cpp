@@ -2,8 +2,8 @@
 #include <cmath>
 
 int* Seg_tree_const(int* list, int n) {
-	int height = (int)ceil(log2(n));
-	int t_size = 2 * (int)pow(2, height) - 1;
+	int height = (int)ceil(log2(n)); //높이
+	int t_size = 2 * (int)pow(2, height) - 1; //배열의 크기
 	int* seg_tree = new int[t_size];
 	Construct_tree(list, 0, n - 1, seg_tree, 0);
 	return seg_tree;

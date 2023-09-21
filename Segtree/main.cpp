@@ -2,11 +2,11 @@
 #include <iostream>
 using namespace std;
 
-#define LIST_LEN 8
+#define LIST_LEN 6
 
 int main() {
-	int list[LIST_LEN] = { 21, 7, 8, 19, 2, 9, 6, 10 };
-	int* seg_tree = Seg_tree_const(list, 8);
+	int list[LIST_LEN] = { 2,4,10,7,9,20 };
+	int* seg_tree = Seg_tree_const(list, LIST_LEN);
 	int q_s, q_e;
 	while (true) {
 		try {
