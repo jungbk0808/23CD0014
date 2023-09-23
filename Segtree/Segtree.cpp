@@ -41,7 +41,7 @@ int* Segtree_update(int* seg_tree, int start, int end, int i, int d_value, int c
 	if (i < start || i > end) {
 		return NULL;
 	}
-	seg_tree[current] = seg_tree[current] + d_value;
+	seg_tree[current] += d_value;
 	if (start != end) {
 		int mid = (start + end) / 2;
 		int child = 2 * current;
