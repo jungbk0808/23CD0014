@@ -4,9 +4,12 @@
 출력을 알파벳 순으로 하려니까 그냥 이진 탐색 트리를 만드는 게 더 좋은 것 같음.
 이진 탐색 트리에 인덱스 저장하는 추가적인 노드 달기 -> 연결리스트로!
 
-문장 번호를 달아야 하니까 문장별로 입력을 받아서 인덱스를 카운트하고, 문장을 다시 분리하여 단어를 찾는 것이 필요할 듯. 
--> getline 같은 함수들 잘 찾아보고 고민해보기. (단어 구분은 공백과 문장부호) https://psychoria.tistory.com/774
-+ fstream은 iostream 상속 받으니까 이거 활용해서 함수 하나로 만들어서 파일 출력인지 모니터 출력인지 선택하도록 https://cplusplus.com/reference/fstream/fstream/ 에서 확인함
+문장 번호를 달아야 하니까 문장별로 입력을 받아서 인덱스를 카운트하고,
+ 문장을 다시 분리하여 단어를 찾는 것이 필요할 듯. 
+-> getline 같은 함수들 잘 찾아보고 고민해보기. (단어 구분은 공백과 문장부호)
+ https://psychoria.tistory.com/774
++ fstream은 iostream 상속 받으니까 이거 활용해서 함수 하나로 만들어서
+ 파일 출력인지 모니터 출력인지 선택하도록 https://cplusplus.com/reference/fstream/fstream/ 에서 확인함
 
 제외할 단어들(전치사)는 해시 테이블에 저장해두고 일치하면 제외
 글자 길이가 제외할 전치사 목록(정하여 저장해둘 예정) 중 가장 긴 길이보다 짧으면 탐색하는 조건으로
@@ -14,16 +17,16 @@
 
 구조체
 struct  { 
-    int line
+    int num
     Line* next
 } Line
 
 struct  { 
-    Word* left
+    Node* left
     string word
     Line* lineHead
-    Word* right 
-} Word
+    Node* right 
+} Node
 
 fail()함수로 파일 잘 열렸는지 확인
 
