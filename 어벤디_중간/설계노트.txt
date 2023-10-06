@@ -14,7 +14,7 @@
 
 구조체
 struct  { 
-    int line
+    int index
     Line* next
 } Line
 
