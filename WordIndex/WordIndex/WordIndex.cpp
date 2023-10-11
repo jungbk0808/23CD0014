@@ -1,61 +1,117 @@
 #include "WordIndex.h"
-//해쉬 테이블 생성
-std::string* Hash::CreateHashTable() {
+
+const std::string nullString = std::string("");
+
+void Hash::InitHashTable() {
+	hashWordsCount = 0; //해쉬 테이블의 단어 개수 초기화
+	hashTable = new std::string[hashTableSize]; //동적 할당
+	for (int i = 0; i < hashTableSize; i++) {
+		hashTable[i] = nullString; //빈 string으로 초기화
+	}
+}
+Hash::Hash() {
+	hashTableSize = HASH_TABLE_SIZE;
+	InitHashTable();
+	std::ifstream ifs(HASH_WORDS_FILE);
+	if (ifs.is_open()) {
+		std::string tmp;
+		while (!ifs.eof()) {
+			ifs >> tmp;
+			AddHashTable(tmp);
+		}
+	}
+}
+void Hash::ExtensionHashTable() {
+	std::string* oldHashTable = hashTable;
+	int oldHashTableSize = hashTableSize;
+	hashTableSize += HASH_TABLE_SIZE;
+	InitHashTable();
+	for (int i = 0; i < oldHashTableSize; i++) {
+		if (oldHashTable[i] != nullString) {
+			AddHashTable(oldHashTable[i]);
+		}
+	}
+	delete[] oldHashTable;
+}
+void Hash::AddHashTable(std::string word) {
+	hashWordsCount++;
+	if (hashWordsCount >= hashTableSize) {
+		ExtensionHashTable();
+		return;
+	}
+	int hashValue = HashFunction(word) % hashTableSize;
+	while (hashTable[hashValue] != nullString) {
+		hashValue = (hashValue + 1) % hashTableSize;
+	}
+	hashTable[hashValue] = word;
+}
+void Hash::DeleteHash(std::string word) {
 
 }
-//해쉬 테이블에 새로운 key 추가
-void Hash::AddHashTable(std::string* hashTable, std::string word) {
+void Hash::DeleteHashTable() {
 
 }
-//해쉬 테이블의 특정 값 삭제
-void Hash::DeleteHash(std::string* hashTable, std::string word) {
-
+bool Hash::IsInHashTable(std::string word) {
+	
+	return true;
 }
-//해쉬 테이블 삭제
-void Hash::DeleteHashTable(std::string* hashTable) {
-
-}
-//해쉬 탐색
-bool Hash::IsInHashTable(std::string* hashTable, std::string word) {
-
-}
-//해쉬 함수
 int Hash::HashFunction(std::string word) {
-
+	int hashValue = 0;
+	int wordSize = word.size();
+	for (int i = 0; i < wordSize; i++) {
+		hashValue += word[i];
+	}
+	return hashValue;
 }
-//해쉬 테이블 출력(표준 출력만 지원)
-void Hash::PrintHashTable(std::string* hashTable) {
-
+void Hash::PrintHashTable() {
+	for (int i = 0; i < hashTableSize; i++) {
+		std::cout << i << '\t' << hashTable[i] << std::endl;
+	}
 }
-//이진 탐색 트리를 생성
 Node* CreateWordBST(std::string word, int index) {
 
+	return NULL;
 }
-//이진 탐색 트리의 노드를 추가
 void AddWordBST(Node** root, std::string word, int index) {
 	
 }
-//이진 탐색 트리를 삭제
 void DeleteWordBSTAll(Node** root) {
 
 }
-//이진 탐색 트리의 노드를 삭제
 void DeleteWordBSTNode(Node** root, std::string word) {
 
 }
-//인덱스 추가
 void AddIndex(Line* head) {
 
 }
-//인덱스 모두 삭제
 void DeleteIndexAll(Line* head) {
 
 }
-//파일로부터 텍스트 입력
 bool InputFile(const char* file) {
-
+	std::ifstream ifs(file);
+	if (ifs.fail()) { 
+		return false; 
+	}
+	std::string line, word;
+	for (int index = 0; std::getline(ifs, line) ; index++) { //종료 조건 점검할 것
+		for (auto word : Tokenize(line)) {
+			//해야 할 일
+			
+		}
+	}
+	
+	return true;
 }
-//출력
-bool Output(std::ostream os) {
+std::vector<std::string> Tokenize(std::string line) {
+	std::regex delimiter(R"([\s|!|\?|.|,]+)");
+	std::sregex_token_iterator it{ line.begin(), line.end(), delimiter, -1 };
+	std::vector<std::string> tokenized{ it, {} };
+	tokenized.erase(std::remove_if(tokenized.begin(), tokenized.end(), [](std::string const& s) {
+		return s.size() == 0;
+		}), tokenized.end());
+	return tokenized;
+}
+bool Output(std::ostream& os) {
 
+	return true;
 }

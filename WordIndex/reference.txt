@@ -1,0 +1,2 @@
+https://plein-de-verite.tistory.com/339 라인으로 입력받고 정규식 사용해서 쪼개는 방법
+https://support.cognex.com/docs/vidi_341/web/KO/vidisuite/Content/ViDi_Topics/1_Overview/images_display_filters_regex_basics.htm 정규식

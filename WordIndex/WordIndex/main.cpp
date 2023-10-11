@@ -1,10 +1,14 @@
 #include <iostream>
+#include <vector>
 #include "WordIndex.h"
 using namespace std;
 
-#define INPUT_FIIL_NAME "input_file1.txt"
-#define OUTPUT_FIIL_NAME "output_file1.txt"
+#define INPUT_FILE_NAME "input_file1.txt"
+#define OUTPUT_FILE_NAME "output_file1.txt"
 
-void main() {
+int main() {
+	/*Hash hashTable;
+	hashTable.PrintHashTable();*/
 
+	return 0;
 }
