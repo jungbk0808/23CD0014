@@ -46,13 +46,13 @@ void Hash::AddHashTable(std::string word) {
 	hashTable[hashValue] = word;
 }
 void Hash::DeleteHash(std::string word) {
-
+	/*구현*/
 }
 void Hash::DeleteHashTable() {
-
+	delete[] hashTable;
 }
 bool Hash::IsInHashTable(std::string word) {
-	
+	/*구현*/
 	return true;
 }
 int Hash::HashFunction(std::string word) {
@@ -69,23 +69,23 @@ void Hash::PrintHashTable() {
 	}
 }
 Node* CreateWordBST(std::string word, int index) {
-
+	/*구현*/
 	return NULL;
 }
 void AddWordBST(Node** root, std::string word, int index) {
-	
+	/*구현*/
 }
 void DeleteWordBSTAll(Node** root) {
-
+	/*구현*/
 }
 void DeleteWordBSTNode(Node** root, std::string word) {
-
+	/*구현*/
 }
 void AddIndex(Line* head) {
-
+	/*구현*/
 }
 void DeleteIndexAll(Line* head) {
-
+	/*구현*/
 }
 bool InputFile(const char* file) {
 	std::ifstream ifs(file);
@@ -96,7 +96,7 @@ bool InputFile(const char* file) {
 	for (int index = 0; std::getline(ifs, line) ; index++) { //종료 조건 점검할 것
 		for (auto word : Tokenize(line)) {
 			//해야 할 일
-			
+			/*구현*/
 		}
 	}
 	
@@ -112,6 +112,6 @@ std::vector<std::string> Tokenize(std::string line) {
 	return tokenized;
 }
 bool Output(std::ostream& os) {
-
+	/*구현*/
 	return true;
 }
