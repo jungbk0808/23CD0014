@@ -7,8 +7,13 @@ using namespace std;
 #define OUTPUT_FILE_NAME "output_file1.txt"
 
 int main() {
-	/*Hash hashTable;
-	hashTable.PrintHashTable();*/
+	Hash hashTable;
+	//hashTable.PrintHashTable();
+
+	WordBST WordIndex;
+	if (WordIndex.InputFile(INPUT_FILE_NAME, hashTable)) {
+		WordIndex.Output();
+	}
 
 	return 0;
 }

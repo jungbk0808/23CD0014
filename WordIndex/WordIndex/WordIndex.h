@@ -26,7 +26,7 @@ public:
 };
 
 class WordBST {
-private:
+public:
 	struct Line {
 		int index;
 		Line* nextIndex;
@@ -37,23 +37,28 @@ private:
 		Line* lineHead;
 		Node* rightChild;
 	};
+private:
+	Line* currentIndex;
 	Node* rootNode;
 	Node* currentNode;
 	Node* parentNode;
 	bool IsInWordBST(std::string word);
+	Line* CreateLine(int index);
 	void AddIndex(int index);
 	void DeleteIndexAll();
+	Node* CreateNode(std::string word);
 	void DeleteNoChildNode();
 	void DeleteOneChildNode();
 	void DeleteTwoChildNode();
+	void PrintWordIndex(Node* iter, std::ostream& os = std::cout);
 public:
 	WordBST();
+	~WordBST();
 	void AddWordBST(std::string word, int index);
 	void DeleteWordBSTNode(std::string word);
-	void DeleteWordBSTAll();
-	~WordBST();
+	void DeleteWordBSTAll(Node* iter);
+	bool InputFile(const char* file, Hash& hashTable);
+	bool Output(std::ostream& os = std::cout);
 };
 
-bool InputFile(const char* file);
 std::vector<std::string> Tokenize(std::string line);
-bool Output(std::ostream& os = std::cout);

@@ -4,6 +4,7 @@ const std::string nullString = std::string("");
 
 void Hash::InitHashTable() {
 	hashWordsCount = 0;
+	maxWordLength = 0;
 	hashTable = new std::string[hashTableSize];
 	for (int i = 0; i < hashTableSize; i++) {
 		hashTable[i] = nullString; //빈 string으로 초기화
@@ -18,6 +19,9 @@ Hash::Hash() {
 		while (!ifs.eof()) {
 			ifs >> tmp;
 			AddHashTable(tmp);
+			if (tmp.size() > maxWordLength) {
+				maxWordLength = tmp.size();
+			}
 		}
 	}
 }
@@ -63,7 +67,7 @@ bool Hash::IsInHashTable(std::string word) {
 				break;
 			}
 			index = (index + 1) % hashTableSize;
-		} while (index == hashValue);
+		} while (index != hashValue);
 	}
 	return false;
 }
@@ -73,7 +77,7 @@ int Hash::HashFunction(std::string word) {
 	for (int i = 0; i < wordSize; i++) {
 		hashValue += word[i];
 	}
-	return hashValue;
+	return hashValue % hashTableSize;
 }
 void Hash::PrintHashTable() {
 	for (int i = 0; i < hashTableSize; i++) {
@@ -96,18 +100,27 @@ bool WordBST::IsInWordBST(std::string word) {
 	}
 	return false;
 }
-void WordBST::AddIndex(int index) {
-	if (currentNode == NULL) return;
-
+WordBST::Line* WordBST::CreateLine(int index) {
 	Line* newIndex = new Line;
 	newIndex->index = index;
 	newIndex->nextIndex = NULL;
-
-	Line* currentIndex = currentNode->lineHead;
-	while (currentIndex != NULL) {
-		currentIndex = currentIndex->nextIndex;
+	return newIndex;
+}
+void WordBST::AddIndex(int index) {
+	if (currentNode == NULL) return;
+	if (currentNode->lineHead == NULL) {
+		currentNode->lineHead = CreateLine(index);
 	}
-	currentIndex->nextIndex = newIndex;
+	else {
+		Line* currentIndex = currentNode->lineHead;
+		while (currentIndex->nextIndex != NULL) {
+			currentIndex = currentIndex->nextIndex;
+		}
+		if (currentIndex->index != index) {
+			currentIndex->nextIndex = CreateLine(index);
+		}
+	}
+	return;
 }
 void WordBST::DeleteIndexAll() {
 	Line* currentIndex = currentNode->lineHead;
@@ -166,25 +179,56 @@ void WordBST::DeleteTwoChildNode() {
 	currentNode = successor;
 	DeleteOneChildNode();
 }
+void WordBST::PrintWordIndex(Node* iter, std::ostream& os) {
+	/*구현*/
+	if (iter != NULL) {
+		PrintWordIndex(iter->leftChild, os);
+		if (iter->word.size() < 8) {
+			os << iter->word << "\t\t";
+		}
+		else {
+			os << iter->word << '\t';
+		}
+		currentIndex = iter->lineHead;
+		os << currentIndex->index;
+		currentIndex = currentIndex->nextIndex;
+		while (currentIndex != NULL) {
+			os << ", " << currentIndex->index;
+			currentIndex = currentIndex->nextIndex;
+		}
+		os << '\n';
+		PrintWordIndex(iter->rightChild, os);
+	}
+}
 WordBST::WordBST() {
 	rootNode = NULL;
 	currentNode = NULL;
 	parentNode = NULL;
 }
+WordBST::~WordBST() {
+	DeleteWordBSTAll(rootNode);
+}
+WordBST::Node* WordBST::CreateNode(std::string word) {
+	Node* newNode = new Node;
+	newNode->leftChild = NULL;
+	newNode->lineHead = NULL;
+	newNode->word = word;
+	newNode->rightChild = NULL;
+	return newNode;
+}
 void WordBST::AddWordBST(std::string word, int index) {
 	if (!IsInWordBST(word)) {
-		Node* newNode = new Node;
-		newNode->leftChild = NULL;
-		newNode->lineHead = NULL;
-		newNode->word = word;
-		newNode->lineHead = NULL;
-
-		currentNode = newNode;
-		if (parentNode->word > word) {
-			parentNode->leftChild = currentNode;
+		currentNode = CreateNode(word);
+		if (rootNode != NULL) {
+			if (parentNode->word > word) {
+				parentNode->leftChild = currentNode;
+			}
+			else {
+				parentNode->rightChild = currentNode;
+			}
 		}
 		else {
-			parentNode->rightChild = currentNode;
+			rootNode = currentNode;
 		}
 	}
 	AddIndex(index);
@@ -207,37 +251,43 @@ void WordBST::DeleteWordBSTNode(std::string word) {
 		delete currentNode; //삭제할 노드 동적 할당 해제
 	}
 }
-void WordBST::DeleteWordBSTAll() {
-	//중위순회
+void WordBST::DeleteWordBSTAll(Node* iter) {
+	//후위순회
+	if (iter != NULL) { 
+		DeleteWordBSTAll(iter->leftChild);
+		DeleteWordBSTAll(iter->rightChild);
+		delete iter;
+	}
 }
-WordBST::~WordBST() {
-	DeleteWordBSTAll();
-}
-bool InputFile(const char* file) {
+bool WordBST::InputFile(const char* file, Hash& hashTable) {
 	std::ifstream ifs(file);
 	if (ifs.fail()) {
 		return false;
 	}
 	std::string line, word;
 	for (int index = 0; std::getline(ifs, line); index++) { //종료 조건 점검할 것
-		for (auto word : Tokenize(line)) {
-			//해야 할 일
-			/*구현*/
+		std::vector<std::string> token = Tokenize(line);
+		for (auto& word : token) {
+			for (auto& lower : word) lower = tolower(lower);
+			if (!hashTable.IsInHashTable(word)) {
+				AddWordBST(word, index);
+			}
 		}
 	}
-
+	return true;
+}
+bool WordBST::Output(std::ostream& os) {
+	/*구현 - try문으로 파일 입출력 오류 같은 거 잡기*/
+	Node* iter = rootNode;
+	PrintWordIndex(iter, os);
 	return true;
 }
 std::vector<std::string> Tokenize(std::string line) {
-	std::regex delimiter(R"([\s|!|\?|.|,]+)");
+	std::regex delimiter(R"([\s|!|\?|.|,|(|)]+)");
 	std::sregex_token_iterator it{ line.begin(), line.end(), delimiter, -1 };
 	std::vector<std::string> tokenized{ it, {} };
 	tokenized.erase(std::remove_if(tokenized.begin(), tokenized.end(), [](std::string const& s) {
 		return s.size() == 0;
 		}), tokenized.end());
 	return tokenized;
-}
-bool Output(std::ostream& os) {
-	/*구현*/
-	return true;
 }
