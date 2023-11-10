@@ -194,26 +194,6 @@ void WordBST::DeleteTwoChildNode() {
 	currentNode = successor;
 	DeleteOneChildNode();
 }
-void WordBST::PrintWordIndex(Node* iter, std::ostream& os) {
-	if (iter != NULL) {
-		PrintWordIndex(iter->leftChild, os);
-		if (iter->word.size() < 8) {
-			os << iter->word << "\t\t";
-		}
-		else {
-			os << iter->word << '\t';
-		}
-		currentIndex = iter->lineHead;
-		os << currentIndex->index;
-		currentIndex = currentIndex->nextIndex;
-		while (currentIndex != NULL) {
-			os << ", " << currentIndex->index;
-			currentIndex = currentIndex->nextIndex;
-		}
-		os << '\n';
-		PrintWordIndex(iter->rightChild, os);
-	}
-}
 WordBST::WordBST() {
 	rootNode = NULL;
 	currentNode = NULL;
@@ -290,12 +270,6 @@ bool WordBST::InputFile(const char* file, Hash& hashTable) {
 	}
 	return true;
 }
-bool WordBST::Output(std::ostream& os) {
-	/*구현 - try문으로 파일 입출력 오류 같은 거 잡기*/
-	Node* iter = rootNode;
-	PrintWordIndex(iter, os);
-	return true;
-}
 std::vector<std::string> Tokenize(std::string line) {
 	std::regex delimiter(R"([\s|!|\?|.|,|(|)]+)");
 	std::sregex_token_iterator it{ line.begin(), line.end(), delimiter, -1 };
@@ -305,3 +279,30 @@ std::vector<std::string> Tokenize(std::string line) {
 		}), tokenized.end());
 	return tokenized;
 }
+bool WordBST::Output(std::ostream& os) {
+	/*구현 - try문으로 파일 입출력 오류 같은 거 잡기*/
+	Node* iter = rootNode;
+	PrintWordIndex(iter, os);
+	return true;
+}
+void WordBST::PrintWordIndex(Node* iter, std::ostream& os) {
+	if (iter != NULL) {
+		PrintWordIndex(iter->leftChild, os);
+		if (iter->word.size() < 8) {
+			os << iter->word << "\t\t";
+		}
+		else {
+			os << iter->word << '\t';
+		}
+		currentIndex = iter->lineHead;
+		os << currentIndex->index;
+		currentIndex = currentIndex->nextIndex;
+		while (currentIndex != NULL) {
+			os << ", " << currentIndex->index;
+			currentIndex = currentIndex->nextIndex;
+		}
+		os << '\n';
+		PrintWordIndex(iter->rightChild, os);
+	}
+}
+// TODO: 주석 달기, 함수 순서 조정, 클린 코드 만들기
