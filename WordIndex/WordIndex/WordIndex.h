@@ -15,13 +15,14 @@ private:
 	int maxWordLength;
 	void InitHashTable();
 	void ExtensionHashTable();
+	int FindHashTableIndex(std::string word);
+	int HashFunction(std::string word);
 public:
 	Hash();
 	~Hash();
 	void AddHashTable(std::string word);
 	void DeleteHash(std::string word);
 	bool IsInHashTable(std::string word);
-	int HashFunction(std::string word);
 	void PrintHashTable();
 };
 

@@ -53,23 +53,38 @@ void Hash::AddHashTable(std::string word) {
 	hashTable[hashValue] = word;
 }
 void Hash::DeleteHash(std::string word) {
-	/*구현*/
+	int index = FindHashTableIndex(word);
+	int nextIndex = index + 1;
+	if (index != -1) {
+		if (hashTable[nextIndex] != nullString) {
+			if (HashFunction(hashTable[nextIndex]) != nextIndex) {
+				hashTable[index] = std::string("!");
+			}
+		}
+		hashTable[index] = nullString;
+	}
 }
 bool Hash::IsInHashTable(std::string word) {
 	if (word.size() <= maxWordLength) {
-		int hashValue = HashFunction(word);
-		int index = hashValue;
-		do {
-			if (hashTable[index] == word) {
-				return true;
-			}
-			else if (hashTable[index] == nullString) {
-				break;
-			}
-			index = (index + 1) % hashTableSize;
-		} while (index != hashValue);
+		if (FindHashTableIndex(word) != -1) {
+			return true;
+		}
 	}
 	return false;
+}
+int Hash::FindHashTableIndex(std::string word) {
+	int hashValue = HashFunction(word);
+	int index = hashValue;
+	do {
+		if (hashTable[index] == word) {
+			return index;
+		}
+		else if (hashTable[index] == nullString) {
+			break;
+		}
+		index = (index + 1) % hashTableSize;
+	} while (index != hashValue);
+	return -1;
 }
 int Hash::HashFunction(std::string word) {
 	int hashValue = 0;
@@ -180,7 +195,6 @@ void WordBST::DeleteTwoChildNode() {
 	DeleteOneChildNode();
 }
 void WordBST::PrintWordIndex(Node* iter, std::ostream& os) {
-	/*구현*/
 	if (iter != NULL) {
 		PrintWordIndex(iter->leftChild, os);
 		if (iter->word.size() < 8) {
