@@ -2,14 +2,6 @@
 
 const std::string nullString = std::string("");
 
-void Hash::InitHashTable() {
-	hashWordsCount = 0;
-	maxWordLength = 0;
-	hashTable = new std::string[hashTableSize];
-	for (int i = 0; i < hashTableSize; i++) {
-		hashTable[i] = nullString; //빈 string으로 초기화
-	}
-}
 Hash::Hash() {
 	hashTableSize = HASH_TABLE_SIZE;
 	InitHashTable();
@@ -23,6 +15,14 @@ Hash::Hash() {
 				maxWordLength = tmp.size();
 			}
 		}
+	}
+}
+void Hash::InitHashTable() {
+	hashWordsCount = 0;
+	maxWordLength = 0;
+	hashTable = new std::string[hashTableSize];
+	for (int i = 0; i < hashTableSize; i++) {
+		hashTable[i] = nullString; //빈 string으로 초기화
 	}
 }
 Hash::~Hash() {
@@ -44,7 +44,6 @@ void Hash::AddHashTable(std::string word) {
 	hashWordsCount++;
 	if (hashWordsCount >= hashTableSize) {
 		ExtensionHashTable();
-		return;
 	}
 	int hashValue = HashFunction(word) % hashTableSize;
 	while (hashTable[hashValue] != nullString) {
@@ -99,22 +98,6 @@ void Hash::PrintHashTable() {
 		std::cout << i << '\t' << hashTable[i] << std::endl;
 	}
 }
-bool WordBST::IsInWordBST(std::string word) {
-	currentNode = rootNode;
-	while (currentNode != NULL) {
-		parentNode = currentNode;
-		if (currentNode->word > word) {
-			currentNode = parentNode->leftChild;
-		}
-		else if (currentNode->word < word) {
-			currentNode = parentNode->rightChild;
-		}
-		else {
-			return true;
-		}
-	}
-	return false;
-}
 WordBST::Line* WordBST::CreateLine(int index) {
 	Line* newIndex = new Line;
 	newIndex->index = index;
@@ -131,7 +114,7 @@ void WordBST::AddIndex(int index) {
 		while (currentIndex->nextIndex != NULL) {
 			currentIndex = currentIndex->nextIndex;
 		}
-		if (currentIndex->index != index) {
+		if (currentIndex->index != index) { //중복된 인덱스가 아닌지 검사
 			currentIndex->nextIndex = CreateLine(index);
 		}
 	}
@@ -145,9 +128,78 @@ void WordBST::DeleteIndexAll() {
 		currentIndex = nextIndex;
 		nextIndex = currentIndex->nextIndex;
 	}
+	currentNode->lineHead = NULL;
+}
+WordBST::WordBST() {
+	rootNode = NULL;
+	currentNode = NULL;
+	parentNode = NULL;
+}
+WordBST::~WordBST() {
+	DeleteWordBSTAll();
+}
+WordBST::Node* WordBST::CreateNode(std::string word) {
+	Node* newNode = new Node;
+	newNode->leftChild = NULL;
+	newNode->lineHead = NULL;
+	newNode->word = word;
+	newNode->rightChild = NULL;
+	return newNode;
+}
+void WordBST::AddWordBST(std::string word, int index) {
+	if (!IsInWordBST(word)) {
+		currentNode = CreateNode(word);
+		if (rootNode != NULL) {
+			if (parentNode->word > word) {
+				parentNode->leftChild = currentNode;
+			}
+			else {
+				parentNode->rightChild = currentNode;
+			}
+		}
+		else {
+			rootNode = currentNode;
+		}
+	}
+	AddIndex(index);
+}
+bool WordBST::IsInWordBST(std::string word) {
+	currentNode = rootNode;
+	while (currentNode != NULL) {
+		parentNode = currentNode;
+		if (currentNode->word > word) {
+			currentNode = parentNode->leftChild;
+		}
+		else if (currentNode->word < word) {
+			currentNode = parentNode->rightChild;
+		}
+		else {
+			return true;
+		}
+	}
+	return false;
+}
+void WordBST::DeleteWordBSTNode(std::string word) {
+	if (!IsInWordBST(word)) {
+		return; //예외처리 가능하면 하기
+	}
+	else {
+		if (currentNode->leftChild == NULL && currentNode->rightChild == NULL) {
+			DeleteNoChildNode();
+		}
+		else if (currentNode->leftChild == NULL || currentNode->rightChild == NULL) {
+			DeleteOneChildNode();
+		}
+		else {
+			DeleteTwoChildNode();
+		}
+		DeleteIndexAll();
+		delete currentNode; //삭제할 노드 동적 할당 해제
+	}
 }
 void WordBST::DeleteNoChildNode() {
 	if (rootNode == currentNode) { //단일 노드인 경우
+		rootNode = NULL;
 		return;
 	}
 	if (parentNode->leftChild == currentNode) {
@@ -180,77 +232,35 @@ void WordBST::DeleteOneChildNode() {
 void WordBST::DeleteTwoChildNode() {
 	//오른쪽 서브 트리의 가장 큰 값을 계승자(대체될 노드)로 만들어 현재 노드를 대체
 	Node* successor = currentNode->rightChild;
-	parentNode = currentNode; 
+	parentNode = currentNode;
 	while (successor->leftChild != NULL) {
 		parentNode = successor;
 		successor = successor->leftChild;
 	}
 	//대체될 노드의 값을 복사
-	currentNode->word = successor->word; 
+	currentNode->word = successor->word;
 	DeleteIndexAll();
 	currentNode->lineHead = successor->lineHead;
 	successor->lineHead = NULL;
 	//successor 노드에 대한 삭제
 	currentNode = successor;
-	DeleteOneChildNode();
-}
-WordBST::WordBST() {
-	rootNode = NULL;
-	currentNode = NULL;
-	parentNode = NULL;
-}
-WordBST::~WordBST() {
-	DeleteWordBSTAll(rootNode);
-}
-WordBST::Node* WordBST::CreateNode(std::string word) {
-	Node* newNode = new Node;
-	newNode->leftChild = NULL;
-	newNode->lineHead = NULL;
-	newNode->word = word;
-	newNode->rightChild = NULL;
-	return newNode;
-}
-void WordBST::AddWordBST(std::string word, int index) {
-	if (!IsInWordBST(word)) {
-		currentNode = CreateNode(word);
-		if (rootNode != NULL) {
-			if (parentNode->word > word) {
-				parentNode->leftChild = currentNode;
-			}
-			else {
-				parentNode->rightChild = currentNode;
-			}
-		}
-		else {
-			rootNode = currentNode;
-		}
-	}
-	AddIndex(index);
-}
-void WordBST::DeleteWordBSTNode(std::string word) {
-	if (!IsInWordBST(word)) {
-		return; //예외처리 가능하면 하기
+	if (currentNode->leftChild == NULL && currentNode->rightChild == NULL) {
+		DeleteNoChildNode();
 	}
 	else {
-		if (currentNode->leftChild == NULL && currentNode->rightChild == NULL) {
-			DeleteNoChildNode();
-		}
-		else if (currentNode->leftChild == NULL || currentNode->rightChild == NULL) {
-			DeleteOneChildNode();
-		}
-		else {
-			DeleteTwoChildNode();
-		}
-		DeleteIndexAll(); //string은 해제 안 해줘도 소멸자가 동작할까????
-		delete currentNode; //삭제할 노드 동적 할당 해제
+		DeleteOneChildNode();
 	}
 }
-void WordBST::DeleteWordBSTAll(Node* iter) {
+void WordBST::DeleteWordBSTAll() {
+	DeleteWordBST(rootNode);
+	rootNode = NULL;
+}
+void WordBST::DeleteWordBST(Node* root) {
 	//후위순회
-	if (iter != NULL) { 
-		DeleteWordBSTAll(iter->leftChild);
-		DeleteWordBSTAll(iter->rightChild);
-		delete iter;
+	if (root != NULL) {
+		DeleteWordBST(root->leftChild);
+		DeleteWordBST(root->rightChild);
+		delete root;
 	}
 }
 bool WordBST::InputFile(const char* file, Hash& hashTable) {
@@ -259,7 +269,7 @@ bool WordBST::InputFile(const char* file, Hash& hashTable) {
 		return false;
 	}
 	std::string line, word;
-	for (int index = 0; std::getline(ifs, line); index++) { //종료 조건 점검할 것
+	for (int index = 0; std::getline(ifs, line); index++) {
 		std::vector<std::string> token = Tokenize(line);
 		for (auto& word : token) {
 			for (auto& lower : word) lower = tolower(lower);
@@ -271,7 +281,7 @@ bool WordBST::InputFile(const char* file, Hash& hashTable) {
 	return true;
 }
 std::vector<std::string> Tokenize(std::string line) {
-	std::regex delimiter(R"([\s|!|\?|.|,|(|)]+)");
+	std::regex delimiter(R"([\s|!|\?|.|,|(|)|;]+)");
 	std::sregex_token_iterator it{ line.begin(), line.end(), delimiter, -1 };
 	std::vector<std::string> tokenized{ it, {} };
 	tokenized.erase(std::remove_if(tokenized.begin(), tokenized.end(), [](std::string const& s) {
@@ -280,7 +290,6 @@ std::vector<std::string> Tokenize(std::string line) {
 	return tokenized;
 }
 bool WordBST::Output(std::ostream& os) {
-	/*구현 - try문으로 파일 입출력 오류 같은 거 잡기*/
 	Node* iter = rootNode;
 	PrintWordIndex(iter, os);
 	return true;
@@ -294,7 +303,7 @@ void WordBST::PrintWordIndex(Node* iter, std::ostream& os) {
 		else {
 			os << iter->word << '\t';
 		}
-		currentIndex = iter->lineHead;
+		Line* currentIndex = iter->lineHead;
 		os << currentIndex->index;
 		currentIndex = currentIndex->nextIndex;
 		while (currentIndex != NULL) {
@@ -305,4 +314,3 @@ void WordBST::PrintWordIndex(Node* iter, std::ostream& os) {
 		PrintWordIndex(iter->rightChild, os);
 	}
 }
-// TODO: 주석 달기, 함수 순서 조정, 클린 코드 만들기

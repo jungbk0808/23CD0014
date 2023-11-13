@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <regex> //정규식 일치로 tokenization 위함
+#include <regex>
 
 #define HASH_TABLE_SIZE 19
 #define HASH_WORDS_FILE "hashWords.txt"
@@ -13,10 +13,10 @@ private:
 	int hashTableSize;
 	int hashWordsCount;
 	int maxWordLength;
-	void InitHashTable();
 	void ExtensionHashTable();
 	int FindHashTableIndex(std::string word);
 	int HashFunction(std::string word);
+	void InitHashTable();
 public:
 	Hash();
 	~Hash();
@@ -39,25 +39,25 @@ public:
 		Node* rightChild;
 	};
 private:
-	Line* currentIndex;
 	Node* rootNode;
 	Node* currentNode;
 	Node* parentNode;
-	bool IsInWordBST(std::string word);
-	Line* CreateLine(int index);
 	void AddIndex(int index);
+	Line* CreateLine(int index);
 	void DeleteIndexAll();
 	Node* CreateNode(std::string word);
+	bool IsInWordBST(std::string word);
 	void DeleteNoChildNode();
 	void DeleteOneChildNode();
 	void DeleteTwoChildNode();
+	void DeleteWordBST(Node* root);
 	void PrintWordIndex(Node* iter, std::ostream& os = std::cout);
 public:
 	WordBST();
 	~WordBST();
 	void AddWordBST(std::string word, int index);
 	void DeleteWordBSTNode(std::string word);
-	void DeleteWordBSTAll(Node* iter);
+	void DeleteWordBSTAll();
 	bool InputFile(const char* file, Hash& hashTable);
 	bool Output(std::ostream& os = std::cout);
 };
